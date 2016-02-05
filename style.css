@@ -1,0 +1,22 @@
+body {
+	background-color: #7777ff;
+	color: white;
+	margin:0px;
+}
+
+header {
+	background-color: #333377;
+	width: 100%;
+	border: hidden;
+}
+
+img.logo {
+	float:left;
+	width:100px;
+	height:120px;
+	padding: 3px;
+}
+
+p {
+	margin-left:4px;
+}
