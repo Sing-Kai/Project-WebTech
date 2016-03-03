@@ -3,8 +3,7 @@
 /* Padding below the footer and lighter body text */
 
 body {
-  padding-top: 50px;
-
+  padding-top: 50px;  
 }
 
 
@@ -136,6 +135,17 @@ body {
 .starter-template {
   padding: 40px 15px;
   text-align: center;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
 }
 
 .footer {
