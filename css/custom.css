@@ -1,0 +1,33 @@
+img.maximise {
+  width: 100%;
+}
+
+#mylogo {
+	width: 40%;
+}
+
+.img_box {
+padding: 10px;
+position: relative;
+}
+
+.img_box p {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  background-color: white;
+  opacity: 0.4;
+}
+
+header, footer{
+background-color: #110604;
+color: #eb870d;
+}
+
+footer {
+padding: 1em;
+}
+
+header img {
+max-height: 5em;
+}
