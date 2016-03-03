@@ -1,3 +1,22 @@
 #mylogo {
 	width: 40%;
 }
+
+.red {
+	background-color: #ff8888;
+	color: red;
+}
+
+.green {
+	background-color: #88ff88;
+	color: green;
+}
+
+.blue {
+	background-color: #8888ff;
+	color: blue;
+}
+
+img.mainpage {
+	width: 100%;
+}
