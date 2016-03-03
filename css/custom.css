@@ -2,6 +2,7 @@
 	width: 40%;
 }
 
+<<<<<<< HEAD
 
 /* photography.html
 -------------------------------------------------- */
@@ -36,3 +37,23 @@
    font-size: 21px;
    line-height: 1.4;
 }
+=======
+.red {
+	background-color: #ff8888;
+	color: red;
+}
+
+.green {
+	background-color: #88ff88;
+	color: green;
+}
+
+.blue {
+	background-color: #8888ff;
+	color: blue;
+}
+
+img.mainpage {
+	width: 100%;
+}
+>>>>>>> 1efc7b99a821a8ffa9e9c8cdced33fe64b174954
