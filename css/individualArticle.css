@@ -11,6 +11,7 @@
 .image-bg-fluid-height {
 	background: url('http://lorempixel.com/g/1920/500/nature') no-repeat center center scroll;
     padding: 100px 0;
+    height: 300px;
 }
 
 .img-center {
