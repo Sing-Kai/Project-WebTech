@@ -52,23 +52,23 @@ function start() {
     dot4.className = "";
     switch(count){
       case 0:
-        mainPhoto.setAttribute ('src','images/ancient-oldest-trees-starlight-photography-beth-moon-5.jpg');
+        mainPhoto.setAttribute ('src','images/Ant_Nebula.jpg');
         dot0.className = "active";
         break;
       case 1:
-        mainPhoto.setAttribute ('src','images/Wagner_Daphnia400.jpg');
+        mainPhoto.setAttribute ('src','images/Alpheus_bellulus.jpg');
         dot1.className = "active";
         break;
       case 2:
-        mainPhoto.setAttribute ('src','images/The-Art-and-Science-of-Cooking-8.png');
+        mainPhoto.setAttribute ('src','images/bee.jpg');
         dot2.className = "active";
         break;
       case 3:
-        mainPhoto.setAttribute ('src','images/small2-720481.jpg');
+        mainPhoto.setAttribute ('src','images/C_auratus_with_prey.jpg');
         dot3.className = "active";
         break;
       case 4:
-        mainPhoto.setAttribute ('src','images/snowflake-11.jpg');
+        mainPhoto.setAttribute ('src','images/celular.jpg');
         dot4.className = "active";
         break;
     }
