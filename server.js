@@ -30,10 +30,12 @@ var types = {
     '.json' : 'application/json',
     '.pdf'  : 'application/pdf',
     '.txt'  : 'text/plain', // plain text only
+    '.ttf'  : 'application/x-font-ttf',
     '.xhtml': '#not suitable for dual delivery, use .html',
     '.htm'  : '#proprietary, non-standard, use .html',
     '.jpg'  : '#common but non-standard, use .jpeg',
     '.rar'  : '#proprietary, non-standard, platform dependent, use .zip',
+    '.docx' : '#proprietary, non-standard, platform dependent, use .pdf',
     '.doc'  : '#proprietary, non-standard, platform dependent, ' +
               'closed source, unstable over versions and installations, ' +
               'contains unsharable personal and printer preferences, use .pdf',
@@ -63,11 +65,6 @@ function printAddresses() {
     console.log('Server running at', httpAddress, 'and', httpsAddress);
 }
 
-// All URLs other than / start with a randomly chosen prefix /site-x so the
-// site is forced to use relative links, and can then be published anywhere.
-var letter = "abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(Math.random()*26));
-var prefix = "/site-" + letter;
-
 // Response codes: see http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 var OK = 200, Redirect = 307, NotFound = 404, BadType = 415, Error = 500;
 
@@ -92,18 +89,17 @@ function fail(response, code) {
     response.end();
 }
 
-// Serve a single request.  Redirect / to add the prefix, but otherwise insist
-// that every URL should start with the prefix.  A URL ending with / is treated
-// as a folder and index.html is added.  A file name without an extension is
-// reported as an error (because we don't know how to deliver it, or if it was
-// meant to be a folder, it would inefficiently have to be redirected for the
-// browser to get relative links right).
+// Serve a single request.  A URL ending with / is treated as a folder and
+// index.html is added.  A file name without an extension is reported as an
+// error (because we don't know how to deliver it, or if it was meant to be a
+// folder, it would inefficiently have to be redirected for the browser to get
+// relative links right).
 function serve(request, response) {
     var file = request.url;
-    if (file == '/') return redirect(response, prefix + '/');
-    if (! starts(file,prefix)) return fail(response, NotFound);
-    file = file.substring(prefix.length);
     if (ends(file,'/')) file = file + 'index.html';
+    // If there are parameters, take them off
+    var parts = file.split("?");
+    if (parts.length > 1) file = parts[0];
     file = "." + file;
     var type = findType(request, path.extname(file));
     if (! type) return fail(response, BadType);
@@ -133,7 +129,7 @@ function findType(request, extension) {
 
 // Check whether a string starts with a prefix, or ends with a suffix
 function starts(s, x) { return s.lastIndexOf(x, 0) == 0; }
-function ends(s, x) { return s.indexOf(x, s.length-x.length) == 0; }
+function ends(s, x) { return s.indexOf(x, s.length-x.length) >= 0; }
 
 // Check that a file is inside the site.  This is essential for security.
 var site = fs.realpathSync('.') + path.sep;
