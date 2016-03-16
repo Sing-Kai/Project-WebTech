@@ -37,4 +37,8 @@ ehthumbs.db
 Thumbs.db
 *~
 
+# Files related to Ben's workflow, not needed for the project #
+###############################################################
 Archive/**
+server1.js
+server2.js
