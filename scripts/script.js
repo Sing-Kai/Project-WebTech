@@ -52,11 +52,11 @@ function start() {
     dot4.className = "";
     switch(count){
       case 0:
-        mainPhoto.setAttribute ('src','images/Ant_Nebula.jpg');
+        mainPhoto.setAttribute ('src','images/ant_nebula.jpg');
         dot0.className = "active";
         break;
       case 1:
-        mainPhoto.setAttribute ('src','images/Alpheus_bellulus.jpg');
+        mainPhoto.setAttribute ('src','images/alpheus_bellulus.jpg');
         dot1.className = "active";
         break;
       case 2:
@@ -64,7 +64,7 @@ function start() {
         dot2.className = "active";
         break;
       case 3:
-        mainPhoto.setAttribute ('src','images/C_auratus_with_prey.jpg');
+        mainPhoto.setAttribute ('src','images/c_auratus_with_prey.jpg');
         dot3.className = "active";
         break;
       case 4:
