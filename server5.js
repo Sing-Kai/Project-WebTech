@@ -46,7 +46,8 @@ function handle(request, response) {
     reply(response, url, type);
 }
 
-//Resolving actions, checking to see if the url dictates an action as opposed to a file~Ben
+/* New section in server 5 by Ben -----------------------------------------------------*/
+//Resolving actions, checking to see if the url dictates an action as opposed to a file ~Ben
 function resolveAction(url) {
     if (url.lastIndexOf(".")!=-1){//return if url is a file (has an extension)
       return url;
@@ -54,23 +55,30 @@ function resolveAction(url) {
     var slash = url.lastIndexOf("/")+1;
     var actioncode = url.substring(slash);
     url = selectAction(url, actioncode);
-    console.log('url returned:', url);  
     return url;
 }
 
 function selectAction(url, actioncode){
-    console.log('selectAction called: url=', url, ' actioncode=', actioncode);
     if ((actioncode = actions[actioncode])=== undefined){//return if url has no defined action associated with it
       return url;
     }
     switch(actioncode){
       case 0:
-      url='/images/mind.jpg'
+      console.log('Could call any function we wanted here');
+      url='/images/mind.jpg';
       break;
     }
-    console.log('changed file:', url);
     return url;
 }
+
+//Takes an action code suffix and returns an action number ~BEN
+function defineActions() {
+    return {
+    'create' : 0,
+    }
+}
+/*-------------------------------------------------------------------------------------*/
+
 // Remove the query part of a url.
 function removeQuery(url) {
     var n = url.indexOf('?');
@@ -231,13 +239,6 @@ function defineTypes() {
     '.rar'  : undefined,      // non-standard, platform dependent, use .zip
     '.doc'  : undefined,      // non-standard, platform dependent, use .pdf
     '.docx' : undefined,      // non-standard, platform dependent, use .pdf
-    }
-}
-
-//Takes an action code suffix and returns an action number ~BEN
-function defineActions() {
-    return {
-    'create' : 0,
     }
 }
 
