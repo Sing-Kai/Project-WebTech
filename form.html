@@ -22,30 +22,79 @@
 <!-- Adaptive navbar based on http://getbootstrap.com/examples/navbar/ -->
 <nav class="navbar navbar-inverse navbar-fixed-top">
 
+  <div class="container">
+
+    <div class="navbar-header">
+
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+      <a class="navbar-brand" href="index.html">ScienceCollective</a>
+
+    </div>
+
+    <div id="navbar" class="collapse navbar-collapse">
+    
+      <ul class="nav navbar-nav">
+        <li><a href="articles.html">Articles</a></li>
+        <li><a href="photography.html">Photography</a></li>
+        <li><a href="videos.html">Videos</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Begining of form -->
 <div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-info">  
+      <div class="panel-heading">Submission Form</div>
 
-  <div class="navbar-header">
+      <fieldset class="form-group">
+        <label for="exampleTextarea">Headline</label>
+        <textarea class="form-control" id="exampleTextarea" rows="1"></textarea>
+      </fieldset>
 
-    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
+      <fieldset class="form-group">
+        <label for="exampleTextarea">Short Description</label>
+        <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+      </fieldset>
 
-    <a class="navbar-brand" href="index.html">ScienceCollective</a>
+      <fieldset class="form-group">
+        <label for="exampleTextarea">Text Body field</label>
+        <textarea class="form-control" id="exampleTextarea" rows="10"></textarea>
+      </fieldset>
 
-  </div>
+      <div class="form-group">
+        <label for="exampleInputFile">Select Image</label>
+        <input type="file" id="exampleInputFile"/>
+      </div>
 
-  <div id="navbar" class="collapse navbar-collapse">
-  
-    <ul class="nav navbar-nav">
-      <li><a href="articles.html">Articles</a></li>
-      <li><a href="photography.html">Photography</a></li>
-      <li><a href="videos.html">Videos</a></li>
-    </ul>
-  </div>
-</div>
+      <fieldset class="form-group">
+        <label for="exampleTextarea">Image Description</label>
+        <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+      </fieldset>
+
+
+      <div class="checkbox has-danger">
+        <label>
+        <input type="checkbox" id="checkboxDanger" value="option1"/>
+        Yes this is my work
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+
+      </div>
+    </div>
+  </div> 
+</div> 
+<!-- End of form-->
 
 
 <footer class="footer">
@@ -53,7 +102,7 @@
     <p class="text-muted">WebTech 2016</p>
   </div>
 </footer>
-</nav>
+
 
 </body>
 </html>
