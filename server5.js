@@ -13,6 +13,7 @@
 // avoid privilege or port number clash problems or to add firewall protection.
 var http = require('http');
 var fs = require('fs');
+var Qs = require("querystring");
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var banned = defineBanned();
 var types = defineTypes();
@@ -32,9 +33,9 @@ function start(port) {
 
 // Serve a request.  Process and validate the url, then deliver the file.
 function handle(request, response) {
-    var url = request.url;
+    var url;
+    url = resolveAction(request);
     url = removeQuery(url);
-    url = resolveAction(url);
     url = lower(url);
     url = addIndex(url);
     if (! valid(url)) return fail(response, NotFound, "Invalid URL");
@@ -48,7 +49,8 @@ function handle(request, response) {
 
 /* New section in server 5 by Ben -----------------------------------------------------*/
 //Resolving actions, checking to see if the url dictates an action as opposed to a file ~Ben
-function resolveAction(url) {
+function resolveAction(request) {
+    var url =request.url;
     if (url.lastIndexOf(".")!=-1){//return if url is a file (has an extension)
       return url;
     }
