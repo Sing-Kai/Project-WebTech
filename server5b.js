@@ -80,25 +80,28 @@ function selectAction(request, actioncode){
 
 /*Reading forms ~Ben  --------------------------*/
 function readForm(request){
-  var body = "";
-    var body = { text: "" };
-    request.on('data', add.bind(null, body));
-    request.on('end', end.bind(null, body));
+    var body = { text: "" }; //body is initialised as an object with an empty string "text"
+    request.on('data', add.bind(null, body));//if some of the form body hasn't yet been read then it calls add to read more of it.
+    request.on('end', end.bind(null, body));//when the whole body has been read it calls end which interprets the form body
 }
 
 function add(body, chunk) {
-    body.text = body.text + chunk.toString();;
+    body.text = body.text + chunk.toString();//reads the body of the form submission 'chunk' by 'chunk'adding each new sting to body.text
 }
 
 function end(body) {
-  console.log("Body:", body);
-  var params = Qs.parse(body.text);
-  console.log("Headline: ", params.headline);
-  console.log("Description: ", params.description);
-  console.log("Article: ", params.article);
-  console.log("Image: ", params.image);
-  console.log("Image Description: ", params.imgdescription);
-  console.log("Owner: ", params.owner);
+  var params = Qs.parse(body.text); //converts the body text into an object with the form field names as parameters
+
+
+/*at the moment we are just writing all the fields from the form to the console*/
+  console.log("Headline: ", params.headline); //params.headline is the headline to put in the database
+  console.log("Description: ", params.description); //params.description is the article description to put in the database
+  console.log("Article: ", params.article);//params.article this is the article content - we might want this to be a document rater than stored in the databas directly.
+  console.log("Image: ", params.image);//params.image is the name of the image to put in the database
+  console.log("Image Description: ", params.imgdescription);//params.imgdescription is the description of the image to put in the database
+  console.log("Owner: ", params.owner);//params.owner this is the field is the checkbox the person submitting has to click to say it's all their own work probably not needed in the database
+
+/*gets the time in miliseconds since since 01/1970 to use as a unique ID*/
   var date = new Date();
   var datetime = date.getTime();
   console.log(datetime);
