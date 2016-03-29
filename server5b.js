@@ -78,21 +78,33 @@ function selectAction(request, actioncode){
     return url;
 }
 
+/*Reading forms ~Ben  --------------------------*/
 function readForm(request){
-  request.on('data', add);
-  request.on('end', end);
   var body = "";
+    var body = { text: "" };
+    request.on('data', add.bind(null, body));
+    request.on('end', end.bind(null, body));
 }
 
-function add(chunk) {
-      body = body + chunk.toString();
+function add(body, chunk) {
+    body.text = body.text + chunk.toString();;
 }
 
-function end() {
+function end(body) {
   console.log("Body:", body);
-  var params = Qs.parse(body);
-  console.log("MyBox: ", params.mybox);
+  var params = Qs.parse(body.text);
+  console.log("Headline: ", params.headline);
+  console.log("Description: ", params.description);
+  console.log("Article: ", params.article);
+  console.log("Image: ", params.image);
+  console.log("Image Description: ", params.imgdescription);
+  console.log("Owner: ", params.owner);
+  var date = new Date();
+  var datetime = date.getTime();
+  console.log(datetime);
 }
+/*-------------------------------------------------*/
+
 
 //Takes an action code suffix and returns an action number ~BEN
 function defineActions() {
