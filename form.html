@@ -20,12 +20,8 @@
 
 <body>
 <!-- Adaptive navbar based on http://getbootstrap.com/examples/navbar/ -->
-<nav class="navbar navbar-inverse navbar-fixed-top">
-
-  <div class="container">
-
+<nav class="navbar navbar-inverse navbar-fixed-top"><div class="container">
     <div class="navbar-header">
-
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
@@ -52,36 +48,37 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6">
+    <form method="post" action="submission">
       <div class="panel panel-info">  
       <div class="panel-heading">Submission Form</div>
 
       <fieldset class="form-group">
         <label for="exampleTextarea">Headline</label>
-        <textarea class="form-control" id="exampleTextarea" rows="1"></textarea>
+        <textarea class="form-control" id="exampleTextarea" name="headline" rows="1"></textarea>
       </fieldset>
 
       <fieldset class="form-group">
         <label for="exampleTextarea">Short Description</label>
-        <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+        <textarea class="form-control" id="exampleTextarea" name="description" rows="3"></textarea>
       </fieldset>
 
       <fieldset class="form-group">
         <label for="exampleTextarea">Text Body field</label>
-        <textarea class="form-control" id="exampleTextarea" rows="10"></textarea>
+        <textarea class="form-control" id="exampleTextarea" name="article" rows="10"></textarea>
       </fieldset>
 
       <div class="form-group">
         <label for="exampleInputFile">Select Image</label>
-        <input type="file" id="exampleInputFile"/>
+        <input type="file" id="exampleInputFile" name="image"/>
       </div>
 
       <fieldset class="form-group">
         <label for="exampleTextarea">Image Description</label>
-        <textarea class="form-control" id="exampleTextarea" rows="3"></textarea>
+        <textarea class="form-control" id="exampleTextarea" name="imgdescription" rows="3"></textarea>
       </fieldset>
 
 
-      <div class="checkbox has-danger">
+      <div class="checkbox has-danger" name="owner">
         <label>
         <input type="checkbox" id="checkboxDanger" value="option1"/>
         Yes this is my work
@@ -89,8 +86,8 @@
       </div>
 
       <button type="submit" class="btn btn-primary">Submit</button>
-
       </div>
+    </form>
     </div>
   </div> 
 </div> 
