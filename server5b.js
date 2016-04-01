@@ -72,7 +72,8 @@ function selectAction(request, actioncode){
       break;
       case 1:
       console.log('form submitted:');
-      readForm(request);      
+      readForm(request); 
+      url='/success.html';     
       break;
     }
     return url;
