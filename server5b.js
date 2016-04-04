@@ -21,6 +21,24 @@ var actions = defineActions(); //~BEN
 test();
 start(8080);
 
+// Initialize Database STILL TESTING
+/*
+"use strict";
+var sql = require('sqlite3');
+sql.verbose();
+var db = new sql.Database("test.db");
+db.serialize(startup);
+
+function startup() {
+  db.run("create table pets (name text, kind text)", error);
+  db.run("insert into pets values ('Odie','dog')", error);
+  db.run("insert into pets values ('Wanda','fish')", error);
+  db.close();
+}
+
+function error(e) { if (e) throw e; }
+*/
+
 // Start the http service.  Accept only requests from localhost, for security.
 // Print out the server address to visit.
 function start(port) {
