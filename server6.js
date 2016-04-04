@@ -18,6 +18,10 @@ var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var banned = defineBanned();
 var types = defineTypes();
 var actions = defineActions(); //~BEN
+var sql = require("sqlite3");
+sql.verbose();
+var db = new sql.Database("article.db");
+db.serialize(populate);
 test();
 start(8080);
 
@@ -144,8 +148,19 @@ function end(body) {
   var date = new Date();
   var datetime = date.getTime();
   console.log(datetime);
+
 }
 /*-------------------------------------------------*/
+
+// populates database
+function populate() {
+
+  db.run("insert into articledetails values ('1234','dummy2 headline', 'dummy2 description', 'dummy2 article', 'dummy2 imagege', '1')", err);
+  db.close();  
+}
+
+// error message if sql statement is incorrect
+function err(e) { if (e) throw e; }
 
 
 //Takes an action code suffix and returns an action number ~BEN
