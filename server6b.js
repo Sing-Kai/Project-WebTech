@@ -19,9 +19,8 @@ var banned = defineBanned();
 var types = defineTypes();
 var actions = defineActions(); //~BEN
 var sql = require("sqlite3");
-sql.verbose();
 var db = new sql.Database("article.db");
-db.serialize(populate);
+sql.verbose();
 test();
 start(8080);
 
@@ -149,7 +148,7 @@ function end(body) {
   var datetime = date.getTime();
   console.log(datetime);
 
-  populate(datetime, params.headline, params.description, params.image);
+  db.serialize(populate(datetime, params.headline, params.description, params.image));
 
 }
 
@@ -160,8 +159,7 @@ var statement =
 
   var ps = db.prepare("insert into articledetails values (?, ?, ?, ?, ?, ?)", err);
   ps.run(key, headline, description, 'dummy2 article', image, '1');
-  ps.finalize();
-  db.close();  
+  ps.finalize();  
 }
 /*-------------------------------------------------*/
 
