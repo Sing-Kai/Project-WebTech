@@ -17,7 +17,6 @@ var Qs = require("querystring");
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var banned = defineBanned();
 var types = defineTypes();
-var actions = defineActions(); //~BEN
 var sql = require("sqlite3");
 var db = new sql.Database("article.db");
 sql.verbose();
@@ -57,26 +56,27 @@ function resolveAction(request, response, url) {
       serve(request, response, url);//Serve if url is a file (has an extension)
     } else {
       var slash = url.lastIndexOf("/")+1;
-      var actioncode = url.substring(slash);actioncode = actions[actioncode];
+      var actioncode = url.substring(slash);
       switch(actioncode){
-        case 0:
-        console.log('Could call any function we wanted here');
-        url='/images/mind.jpg';
-        serve(request, response, url); 
-        break;
-        case 1:
-        console.log('form submitted:');
-        readForm(request); 
-        url='/success.html';
-        serve(request, response, url);   
-        break;
-        case 2:
-        url='/articles.html';
-        servearticles(request, response, url);
-        break;
+        case 'create':
+          //basic test of function to be removed when we are happy with performance
+          console.log('Could call any function we wanted here');
+          url='/images/mind.jpg';
+          serve(request, response, url); 
+          break;
+        case 'submission':
+          console.log('form submitted:');
+          readForm(request); 
+          url='/success.html';
+          serve(request, response, url);   
+          break;
+        case 'articles':
+          url='/articles.html';
+          servearticles(request, response, url);
+          break;
         default:
-        return fail(response, NotFound, "URL refers to an undefined action");
-        break;
+          return fail(response, NotFound, "URL refers to an undefined action");
+          break;
       }
     }
 }
@@ -166,15 +166,6 @@ var statement =
 // error message if sql statement is incorrect
 function err(e) { if (e) throw e; }
 
-
-//Takes an action code suffix and returns an action number ~BEN
-function defineActions() {
-    return {
-    'create' : 0,//basic test of function to be removed when we are happy with performance
-    'submission':1,
-    'articles': 2,
-    }
-}
 /*-------------------------------------------------------------------------------------*/
 
 // Remove the query part of a url.
