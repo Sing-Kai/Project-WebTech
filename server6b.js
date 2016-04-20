@@ -148,22 +148,20 @@ function end(body) {
   var datetime = date.getTime();
   console.log(datetime);
 
-  db.serialize(populate(datetime, params.headline, params.description, params.image));
+  db.serialize(populate(datetime, params.headline, params.description, params.image, params.imgdescription));
 
 }
 
 // populates database
-function populate(key, headline, description, image) {
-var statement =
-  db.run("insert into articledetails values ('1234','dummy2 headline', 'dummy2 description', 'dummy2 article', 'dummy2 imagege', '1')", err);
-
+function populate(key, headline, description, imagename, imagedesc) {
   var ps = db.prepare("insert into articledetails values (?, ?, ?, ?, ?, ?)", err);
-  ps.run(key, headline, description, 'dummy2 article', image, '1');
+  ps.run(key, headline, description, imagename, imagedesc, 'Default User');
   ps.finalize();  
 }
 /*-------------------------------------------------*/
 
 // error message if sql statement is incorrect
+//I'm not very acustomed to error handling -but this seems to be unhandled - looks like it causes whole server to crash if there is an error in reading the database!
 function err(e) { if (e) throw e; }
 
 /*-------------------------------------------------------------------------------------*/
