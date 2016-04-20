@@ -6,8 +6,8 @@ var db = new sql.Database("article.db");
 db.serialize(startup);
 
 function startup() {
-  db.run("create table articledetails (datatime integer, headline text, description text, article text, imagedesc text, owner integer)", err);
-  db.run("insert into articledetails values ('123','dummy headline', 'dummy description', 'dummy article', 'dummy imagege', '1')", err);
+  db.run("create table articledetails (datatime integer primary key, headline text, description text, imagename text, imagedesc text, username text)", err);
+  db.run("insert into articledetails values ('123','dummy headline', 'dummy description', 'dummy imagename', 'dummy imagedesc', 'dummy username')", err);
   //db.run("insert into pets values ('Wanda','fish')", err);
   db.close();
 }
