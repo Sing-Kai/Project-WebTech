@@ -60,9 +60,7 @@ function resolveAction(request, response, url) {
       switch(actioncode){
         case 'create':
           //basic test of function to be removed when we are happy with performance
-          console.log('Could call any function we wanted here');
-          readDatabase();
-          
+          console.log('Could call any function we wanted here');           
           url='/images/mind.jpg';
           serve(request, response, url); 
           break;
@@ -99,18 +97,28 @@ function servearticles(request, response, url) {
 
 function filltemplate(response, type, err, content) {
    if (err) return fail(response, NotFound, "File not found");
-   for(i=1; i<=5; i++){
+   console.log("filltemplate");
+   db.all("select * from articledetails order by datatime DESC", show.bind(null, response, type, content));
+}
+
+function show(response, type, content, err, row){
+  if(err) return fail(response, NotFound, "Database access failed");
+  var i =0;
+  for(i = 0; i < row.length; i++){
+    console.log(row[i]);		
+  }   
+  for(i=0; i<5 && i<row.length; i++){
      var imgLoc ="temp.img" +i;
      var altLoc ="temp.alt" +i;
      var linkaLoc ="temp.linka" +i;
      var linkbLoc ="temp.linkb" +i;
      var titleLoc ="temp.title" +i;
      var descripLoc ="temp.descrip" +i;
-     var img ="images/fractal.jpg";
-     var alt ="Spirals circles and swirls form a riveting fractal pattern";
-     var link ="individual_article.html";
-     var title ="The wonder of fractals";
-     var descrip ="Simple mathematics can result in riveting results. It is hard to believe that from a single formula such rich intricacy appears";
+     var img ="images/"+row[i].imagename;
+     var alt =row[i].imagedesc;
+     var link =row[i].datatime;
+     var title =row[i].headline;
+     var descrip =row[i].description;
 
      content=content.replace(imgLoc,img);
      content=content.replace(altLoc, alt);
@@ -119,7 +127,7 @@ function filltemplate(response, type, err, content) {
      content=content.replace(titleLoc, title);
      content=content.replace(descripLoc, descrip);
    }
-   deliver(response, type, err, content);
+   deliver(response, type, err, content);	
 }
 
 /*Reading forms ~Ben  --------------------------*/
@@ -161,20 +169,7 @@ function populate(key, headline, description, imagename, imagedesc) {
   ps.finalize();  
 }
 
-function readDatabase() {
-  //var ps = db.prepare("insert into articledetails values (?, ?, ?, ?, ?, ?)", err);
-  db.all("select datatime from articledetails order by datatime DESC", show);
-  //db.finalize();
-  console.log("hello");
-}
 
-function show(err, row){
-	if(err) throw err;
-	var i =0;
-	for(i = 0; i < row.length; i++){
-	   console.log(row[i].datatime);		
-	}	
-}
 /*-------------------------------------------------*/
 
 // error message if sql statement is incorrect
