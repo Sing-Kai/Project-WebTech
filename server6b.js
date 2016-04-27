@@ -61,6 +61,8 @@ function resolveAction(request, response, url) {
         case 'create':
           //basic test of function to be removed when we are happy with performance
           console.log('Could call any function we wanted here');
+          readDatabase();
+          
           url='/images/mind.jpg';
           serve(request, response, url); 
           break;
@@ -157,6 +159,21 @@ function populate(key, headline, description, imagename, imagedesc) {
   var ps = db.prepare("insert into articledetails values (?, ?, ?, ?, ?, ?)", err);
   ps.run(key, headline, description, imagename, imagedesc, 'Default User');
   ps.finalize();  
+}
+
+function readDatabase() {
+  //var ps = db.prepare("insert into articledetails values (?, ?, ?, ?, ?, ?)", err);
+  db.all("select datatime from articledetails order by datatime DESC", show);
+  //db.finalize();
+  console.log("hello");
+}
+
+function show(err, row){
+	if(err) throw err;
+	var i =0;
+	for(i = 0; i < row.length; i++){
+	   console.log(row[i].datatime);		
+	}	
 }
 /*-------------------------------------------------*/
 
