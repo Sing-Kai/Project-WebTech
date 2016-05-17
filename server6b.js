@@ -53,6 +53,7 @@ function validate(request, response, url){
 function resolveAction(request, response, url) {
 
     if (url.lastIndexOf(".") > url.lastIndexOf("/")){
+      url="/resources"+url;//Directs to the resources folder, protecting anything stored elsewhere
       serve(request, response, url);//Serve if url is a file (has an extension)
     } else {
       var slash = url.lastIndexOf("/")+1;
@@ -61,17 +62,17 @@ function resolveAction(request, response, url) {
         case 'create':
           //basic test of function to be removed when we are happy with performance
           console.log('Could call any function we wanted here');           
-          url='/images/mind.jpg';
+          url='/resources/images/mind.jpg';
           serve(request, response, url); 
           break;
         case 'submission':
           console.log('form submitted:');
           readForm(request); 
-          url='/success.html';
+          url='/resources/success.html';
           serve(request, response, url);   
           break;
         case 'articles':
-          url='/articles.html';
+          url='/templates/articles.html';
           servearticles(request, response, url);
           break;
         default:
@@ -157,7 +158,7 @@ function end(body) {
   var date = new Date();
   var datetime = date.getTime();
   console.log(datetime);
-
+  fs.writeFile("articles/"+datetime +".txt", params.article);//Needs a way of handling errors, can take two additional optional arguments, encoding and a callback function which takes err
   db.serialize(populate(datetime, params.headline, params.description, params.image, params.imgdescription));
 
 }
@@ -367,7 +368,7 @@ function test() {
     check(findType("/x.htm"), undefined);
     check(negotiate("xxx,text/html"), "text/html");
     check(negotiate("xxx,application/xhtml+xml"), "application/xhtml+xml");
-    check(fs.existsSync('./index.html'), true, "site contains no index.html");
+    check(fs.existsSync('./resources/index.html'), true, "site contains no index.html");
 }
 
 function check(x, out, message) {
