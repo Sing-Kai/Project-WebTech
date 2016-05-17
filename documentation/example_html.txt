@@ -1,0 +1,48 @@
+<html>
+
+<head>
+  <meta class="a_metta_tag"/>
+  <meta class="another_metta_tag"/>
+</head>
+
+<body>
+
+<nav>
+<ul>
+  <li>a list item</li>
+  <li>and another one</li>
+</ul>
+</nav>
+
+<main>
+
+<section>
+  <p>This is some lorem ipsum: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis enim quis tellus vehicula dapibus. Nullam rhoncus quam nec lacinia tempus. Nunc ac ex augue. Integer odio magna, laoreet at nunc at, dictum vulputate velit. Nam dignissim enim massa, lobortis viverra orci interdum id. Praesent ac quam urna. Sed faucibus massa semper leo iaculis imperdiet.</p>
+  <p> Another paragraph of lorem ipsum:Praesent condimentum semper ligula, eget dignissim lorem auctor a. Fusce in tempor risus. Suspendisse elementum magna quis lacus mattis, tempus cursus massa finibus. Fusce sit amet porta metus. Mauris malesuada sapien turpis, ac fermentum risus rhoncus ac. Proin eleifend enim a elit consequat, id imperdiet lectus varius. Nam varius pharetra nisl, non mollis libero tempor nec. Sed finibus, neque vel pharetra faucibus, arcu massa pharetra sapien, vitae semper nulla diam volutpat ante.</p>
+</section>
+
+<section>
+<table>
+  <tr>
+    <td>Data</td>
+    <td>Data</td>
+    <td>Data</td>
+  </tr>
+  <tr>
+    <td>Data</td>
+    <td>Data</td>
+    <td>Data</td>
+  </tr>
+</table>
+
+</section>
+
+</main>
+
+<footer>
+  <p>text in footer</p>
+</footer>
+
+</body>
+
+</html>
