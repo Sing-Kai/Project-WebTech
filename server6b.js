@@ -56,22 +56,33 @@ function resolveAction(request, response, url) {
       url="/resources"+url;//Directs to the resources folder, protecting anything stored elsewhere
       serve(request, response, url);//Serve if url is a file (has an extension)
     } else {
-      var slash = url.lastIndexOf("/")+1;
-      var actioncode = url.substring(slash);
+      var dash = url.lastIndexOf("-");
+      if (url.lastIndexOf("-") >= 1){      
+        argument = url.substring(dash+1);
+        actioncode= url.substring(0,dash);
+        console.log("argument ",argument);
+        console.log("actioncode ",actioncode);
+      } else {
+        actioncode= url;
+      }
       switch(actioncode){
-        case 'create':
+        case '/create':
           //basic test of function to be removed when we are happy with performance
           console.log('Could call any function we wanted here');           
           url='/resources/images/mind.jpg';
           serve(request, response, url); 
           break;
-        case 'submission':
+        case '/submission':
           console.log('form submitted:');
           readForm(request); 
           url='/resources/success.html';
           serve(request, response, url);   
           break;
-        case 'articles':
+        case '/article':
+          url='/templates/individual_article.html';
+          serveIndividual(request, response, url, argument);
+          break;
+        case '/articles':
           url='/templates/articles.html';
           servearticles(request, response, url);
           break;
@@ -89,25 +100,51 @@ function serve(request, response, url) {
     reply(response, url, type);
 }
 
+function serveIndividual(request, response, url, article){
+  var type = "text/html";
+  var articleBody ="./articles/"+article+".txt";
+  type = negotiate(request.headers.accept);
+  fs.readFile(articleBody, 'utf-8', getIndividualTemp.bind(null, response, type, article, url));
+}
+
+function getIndividualTemp(response, type, article, url, err, articleBody){
+  if (err) return fail(response, NotFound, "Article text not found");
+  var file = "."+url;
+  fs.readFile(file, 'utf-8', fillIndividualTemp.bind(null, response, type, article, articleBody));
+}
+
+function fillIndividualTemp(response, type, article, articleBody, err, template){
+  if (err) return fail(response, NotFound, "Article template not found");
+  var dbrequest="select * FROM articledetails WHERE datatime='"+article+"'";
+  console.log(dbrequest);
+  template=template.replace("temp.body",articleBody);
+  db.all(dbrequest, showIndividual.bind(null, response, type, template));
+}
+
+function showIndividual(response, type, template, err, row){
+  if(err) return fail(response, NotFound, "Database access failed");
+  template=template.replace("temp.img",row[0].imagename);
+  template=template.replace("temp.alt",row[0].imagedesc);
+  template=template.replace("temp.title",row[0].headline);
+  template=template.replace("temp.descrip",row[0].description);
+  deliver(response, type, err, template);	
+}
+
 function servearticles(request, response, url) {
   var type = "text/html";
   var file = "." + url;
   type = negotiate(request.headers.accept);
-  fs.readFile(file, 'utf-8', filltemplate.bind(null, response, type));;
+  fs.readFile(file, 'utf-8', fillArticlesTemp.bind(null, response, type));
 }
 
-function filltemplate(response, type, err, content) {
+function fillArticlesTemp(response, type, err, content) {
    if (err) return fail(response, NotFound, "File not found");
-   console.log("filltemplate");
    db.all("select * from articledetails order by datatime DESC", show.bind(null, response, type, content));
 }
 
 function show(response, type, content, err, row){
   if(err) return fail(response, NotFound, "Database access failed");
   var i =0;
-  for(i = 0; i < row.length; i++){
-    console.log(row[i]);		
-  }   
   for(i=0; i<5 && i<row.length; i++){
      var imgLoc ="temp.img" +i;
      var altLoc ="temp.alt" +i;
@@ -117,7 +154,7 @@ function show(response, type, content, err, row){
      var descripLoc ="temp.descrip" +i;
      var img ="images/"+row[i].imagename;
      var alt =row[i].imagedesc;
-     var link =row[i].datatime;
+     var link ="article-"+row[i].datatime;
      var title =row[i].headline;
      var descrip =row[i].description;
 
@@ -182,7 +219,9 @@ function err(e) { if (e) throw e; }
 // Remove the query part of a url.
 function removeQuery(url) {
     var n = url.indexOf('?');
-    if (n >= 0) url = url.substring(0, n);
+    if (n >= 0){
+      url = url.substring(0, n);
+    }
     return url;
 }
 
@@ -378,4 +417,3 @@ function check(x, out, message) {
     console.trace();
     process.exit(1);
 }
-
