@@ -12,7 +12,8 @@
 // Then start the server on the given port: use the default 80, or use 8080 to
 // avoid privilege or port number clash problems or to add firewall protection.
 var http = require('http');
-var fs = require('fs');
+var fs = require('fs-extra');
+var formidable = require('formidable');
 var Qs = require("querystring");
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var banned = defineBanned();
