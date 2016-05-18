@@ -124,7 +124,7 @@ function fillIndividualTemp(response, type, article, articleBody, err, template)
 
 function showIndividual(response, type, template, err, row){
   if(err) return fail(response, NotFound, "Database access failed");
-  template=template.replace("temp.img",row[0].imagename);
+  template=template.replace("temp.img","images/"+row[0].imagename);
   template=template.replace("temp.alt",row[0].imagedesc);
   template=template.replace("temp.title",row[0].headline);
   template=template.replace("temp.descrip",row[0].description);
@@ -187,12 +187,19 @@ function readForm(request){
 }
 
 function storeToDB(err, params, files) {
-  console.log(files.File);
+  //var image = files.image;
+  //console.log("image[0]: ",image[0]);
+  //console.log("image[File]: ",image[File]);
+  //console.log("image.File: ",image.File);  
+  //console.log("image.domain: ",image.domain);
+  //console.log("image.name: ",image.name);
+  //console.log("files.image.name: ",files.image.name);
+  //console.log("image: ",image);
 /*at the moment we are just writing all the fields from the form to the console*/
   console.log("Headline: ", params.headline); //params.headline is the headline to put in the database
   console.log("Description: ", params.description); //params.description is the article description to put in the database
   console.log("Article: ", params.article);//params.article this is the article content - we might want this to be a document rater than stored in the databas directly.
-  console.log("Image: ", params.image);//params.image is the name of the image to put in the database
+  console.log("Image: ", files.image.name);//params.image is the name of the image to put in the database
   console.log("Image Description: ", params.imgdescription);//params.imgdescription is the description of the image to put in the database
   console.log("Owner: ", params.owner);//params.owner this is the field is the checkbox the person submitting has to click to say it's all their own work probably not needed in the database
 
@@ -201,7 +208,7 @@ function storeToDB(err, params, files) {
   var datetime = date.getTime();
   console.log(datetime);
   fs.writeFile("articles/"+datetime +".txt", params.article);//Needs a way of handling errors, can take two additional optional arguments, encoding and a callback function which takes err
-  db.serialize(populate(datetime, params.headline, params.description, params.image, params.imgdescription));
+  db.serialize(populate(datetime, params.headline, params.description, files.image.name, params.imgdescription));
 
 }
 
@@ -214,7 +221,7 @@ function storeImage(fields, files) {
   /* Temporary location of our uploaded file */
   var temp_path = this.openedFiles[0].path;
   /* The file name of the uploaded file */
-  var file_name = this.openedFiles[0].name;
+  var file_name = (this.openedFiles[0].name).toLowerCase();
   /* Location where we want to copy the uploaded file */
   var new_location = './resources/images/';
  
