@@ -19,19 +19,70 @@ var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var banned = defineBanned();
 var types = defineTypes();
 var sql = require("sqlite3");
-var db = new sql.Database("article.db");
+
+/* --- Self signed key and certificate; generated from http://www.selfsignedcertificate.com/; for testing purposes only; for a real certificate if website were made live https://letsencrypt.org/ could be used --- */
+var db = new sql.Database("article.db");var key =
+  "-----BEGIN RSA PRIVATE KEY-----\n"+
+  "MIIEogIBAAKCAQEArWideleJSjdSBDfmWj/I7keYiBY2zlD7chguEm4X0YhRtdCB\n"+
+  "VeGiEDdthxbtM6uabw22uk/lGvkfxuPGZaDNEDOuY8mMK1qxg3+D5uyf8ZROWG/D\n"+
+  "XNPxGcG81eRTJHbqyzg4jn932346Raax2wfa352ExEXwMzfTSbFLXvi6QS3+BkMW\n"+
+  "aoJ2bIYkut7ve/ldjuQEVqzBagcqXCeg0cNyWIcKTD0VzyyV5ciG9cURnrJD7i4S\n"+
+  "BU4GrLqP2qrYVEyR+bUOKEBZzchHS2/jGn8XRrIkP/RmZq5tG2YSMgPDyjOlS+Vm\n"+
+  "G0LpiMQfgJQuB9sQo35CVnv2TsR/6HMHjv83PwIDAQABAoIBADHQyuSZfxQ1/ja+\n"+
+  "BEvK5SMmqDf4AbiVZRaqwZmDzQ3hlm+fvXf5gMAd3DYhrPTaCFx82RB+4Tc1eB5/\n"+
+  "0r/hSOetoRyDiuPtgu9e03qkYXJaA4O+X6YsMKgQkvnzRLtF+j91IDI3hiwlAAKA\n"+
+  "V7mvcP4qVzi3SsC7+dPCvf9DfuY4IdwFHWFqAnWBtEvj1q+uOSmO0F6Iwk45NiUT\n"+
+  "RhMiMxMcq5FIBtUYwKFSnJx+O1G6GXVTpTvMtdEmeHtUZup0Lmolr8GC/HZAoCYR\n"+
+  "16Jz9XIXevPrSDiZn+MPbgWB/ZxQX7/+oSsTVf4vAm1XeIgxBhBa/zF3uVz+DQtv\n"+
+  "xRFSD9ECgYEA4V0ELHNZozWz1pklqdGXq0TNnq9+f7lUdqHBAeanYhZPL6QS3+5J\n"+
+  "RCGuSamh3C0kGHdbGXcP/J6mBAyz+ve3Wml5YuhACOM3qcUf96XwQ6WJ3w1e5d7Z\n"+
+  "ceqnRZMbF71+M/KFzkV47rdc01N3x/WhO3ytzcNZjQNq/6ecf39/tGkCgYEAxPt/\n"+
+  "Ud7NEiZhQiFzLs0VaqkpVuGl7ik7mLuzVfZZ3H0gQNRA47iCUY+gYS4Fbsxhg1pB\n"+
+  "Hdj2GaO+c6h6RHyr8LPQ+/09tYjTLuZMCO4/Vkz9ZZTWFpgYvpc2MqFGUP8m+yCj\n"+
+  "tt5ctZmEjRKAhM5d6rnGcK32oTKORbkYxYiYeWcCgYAKEm8qUWlzKuZDtAqD4XMm\n"+
+  "22dZLTy5Fp5YwvfuTtGyR474cRvK2Ep7+glhD2zFe1r+oO74X2LehnSi/7JXiBSw\n"+
+  "vMAJFJowC3+kXcQE/GyViWN1DZLtMR2EwtkA+gce84AdcDxcsKwr9xP1+egDjs3K\n"+
+  "69KUvKNW8w0oKeSLqjYZ6QKBgF9pckI1qR8hd/qQOTpyG+2OAngS1EyHrFZOlI8O\n"+
+  "xHgII5dDOCsVNApNh2GK6RbB6Hm3PdM3Q/0nUxiygoap3J66en+UKk/D9obBBhNN\n"+
+  "U2B56kNJ1GkdQt8OXzIm6+hPrpH1PVdWXZGYypuKWrX5P4Ryd6wcl1l9I2yiO11y\n"+
+  "zGgBAoGAV2xLf15TAUjyBpfHPLwKamHu3/R1UjW+d9hK+73j3IKY9L3jC5o38cJM\n"+
+  "6QgUKU27/89n4xC6RD04EjChz6JBYPnZ8EkkPDeuXn8Ag2bPoQ8Uj0J4Bby5fqPl\n"+
+  "p4/YV+28M/bnSaGQorMXshDghv6xZ/b9QYtOXK3tBBBQmvcubgA=\n"+
+  "-----END RSA PRIVATE KEY-----\n";
+
+var cert =
+  "-----BEGIN CERTIFICATE-----\n"+
+  "MIIC+zCCAeOgAwIBAgIJANDV69sk8hBCMA0GCSqGSIb3DQEBBQUAMBQxEjAQBgNV\n"+
+  "BAMMCWxvY2FsaG9zdDAeFw0xNjA1MTgxNTU5MjhaFw0yNjA1MTYxNTU5MjhaMBQx\n"+
+  "EjAQBgNVBAMMCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC\n"+
+  "ggEBAK1onXpXiUo3UgQ35lo/yO5HmIgWNs5Q+3IYLhJuF9GIUbXQgVXhohA3bYcW\n"+
+  "7TOrmm8NtrpP5Rr5H8bjxmWgzRAzrmPJjCtasYN/g+bsn/GUTlhvw1zT8RnBvNXk\n"+
+  "UyR26ss4OI5/d9t+OkWmsdsH2t+dhMRF8DM300mxS174ukEt/gZDFmqCdmyGJLre\n"+
+  "73v5XY7kBFaswWoHKlwnoNHDcliHCkw9Fc8sleXIhvXFEZ6yQ+4uEgVOBqy6j9qq\n"+
+  "2FRMkfm1DihAWc3IR0tv4xp/F0ayJD/0ZmaubRtmEjIDw8ozpUvlZhtC6YjEH4CU\n"+
+  "LgfbEKN+QlZ79k7Ef+hzB47/Nz8CAwEAAaNQME4wHQYDVR0OBBYEFFhcsSyjG7Ga\n"+
+  "lAwW/EZbxeSBLOSjMB8GA1UdIwQYMBaAFFhcsSyjG7GalAwW/EZbxeSBLOSjMAwG\n"+
+  "A1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAF5tAbPfql37xYE1Py+vi/Kr\n"+
+  "sTNIQ/VaDaMJj0LO9y9w2H/fueAJO3rO6iVSSpr3sDLzg8Qa7yVXsF5ymv4Lx3sJ\n"+
+  "vDdgSBUEtInDkVaz7i6bD+VccGzVh/mMNlkaPNFSqiDFVBFr4HedPgLZ1rmksats\n"+
+  "E2Ie6YcXVo69CKlzfEJ5ATAGjDBxxfn9BGqPIOc2sO9gcwDIEPXAQkoeX7iKN0oS\n"+
+  "IaGtt9+jXAgAz/1AGAbC2R97b/ocXsY1Nb0zdw6PLUvlw6+xvHyM2uocTRv4oG34\n"+
+  "XCPcuZBZCxsla3/66kZnSXA57Dy2K85g9hxKnQZRraI+V7+sBhHe79lAC7Tm0HA=\n"+
+  "-----END CERTIFICATE-----\n";
+/*---------------------------------------------------------------------*/
+
 sql.verbose();
 test();
-start(8080);
+start(8081);
 
 // Start the http service.  Accept only requests from localhost, for security.
 // Print out the server address to visit.
 function start(port) {
     var options = { key: key, cert: cert };
-    var httpsService = https.createServer(handle);
+    var httpsService = https.createServer(options, handle);
     httpsService.listen(port, 'localhost');
     var address = "https://localhost";
-    if (port != 80) address = address + ":" + port;
+    if (port != 443) address = address + ":" + port;
     console.log("Server running at", address);
 }
 
@@ -452,44 +503,3 @@ function check(x, out, message) {
     console.trace();
     process.exit(1);
 }
-
-// A dummy key and certificate are provided for https.
-// They should not be used on a public site because they are insecure.
-// They are effectively public, which private keys should never be.
-var key =
-    "-----BEGIN RSA PRIVATE KEY-----\n" +
-    "MIICXAIBAAKBgQDGkGjkLwOG9gkuaBFj12n+dLc+fEFk1ns60vsE1LNTDtqe87vj\n" +
-    "3cTMPpsSjzZpzm1+xQs3+ayAM2+wkhdjhthWwiG2v2Ime2afde3iFzA93r4UPlQv\n" +
-    "aDVET8AiweE6f092R0riPpaG3zdx6gnsnNfIEzRH3MnPUe5eGJ/TAiwxsQIDAQAB\n" +
-    "AoGAGz51JdnNghb/634b5LcJtAAPpGMoFc3X2ppYFrGYaS0Akg6fGQS0m9F7NXCw\n" +
-    "5pOMMniWsXdwU6a7DF7/FojJ5d+Y5nWkqyg7FRnrR5QavIdA6IQCIq8by9GRZ0LX\n" +
-    "EUpgIqE/hFbbPM2v2YxMe6sO7E63CU2wzSI2aYQtWCUYKAECQQDnfABYbySAJHyR\n" +
-    "uxntTeuEahryt5Z/rc0XRluF5yUGkaafiDHoxqjvirN4IJrqT/qBxv6NxvKRu9F0\n" +
-    "UsQOzMpJAkEA25ff5UQRGg5IjozuccopTLxLJfTG4Ui/uQKjILGKCuvnTYHYsdaY\n" +
-    "cZeVjuSJgtrz5g7EKdOi0H69/dej1cFsKQJBAIkc/wti0ekBM7QScloItH9bZhjs\n" +
-    "u71nEjs+FoorDthkP6DxSDbMLVat/n4iOgCeXRCv8SnDdPzzli5js/PcQ9kCQFWX\n" +
-    "0DykGGpokN2Hj1WpMAnqBvyneXHMknaB0aXnrd/t7b2nVBiVhdwY8sG80ODBiXnt\n" +
-    "3YZUKM1N6a5tBD5IY2kCQDIjsE0c39OLiFFnpBwE64xTNhkptgABWzN6vY7xWRJ/\n" +
-    "bbMgeh+dQH20iq+O0dDjXkWUGDfbioqtRClhcyct/qE=\n" +
-    "-----END RSA PRIVATE KEY-----\n";
-
-var cert =
-"-----BEGIN CERTIFICATE-----\n"+
-"MIIC+zCCAeOgAwIBAgIJANDV69sk8hBCMA0GCSqGSIb3DQEBBQUAMBQxEjAQBgNV\n"+
-"BAMMCWxvY2FsaG9zdDAeFw0xNjA1MTgxNTU5MjhaFw0yNjA1MTYxNTU5MjhaMBQx\n"+
-"EjAQBgNVBAMMCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC\n"+
-"ggEBAK1onXpXiUo3UgQ35lo/yO5HmIgWNs5Q+3IYLhJuF9GIUbXQgVXhohA3bYcW\n"+
-"7TOrmm8NtrpP5Rr5H8bjxmWgzRAzrmPJjCtasYN/g+bsn/GUTlhvw1zT8RnBvNXk\n"+
-"UyR26ss4OI5/d9t+OkWmsdsH2t+dhMRF8DM300mxS174ukEt/gZDFmqCdmyGJLre\n"+
-"73v5XY7kBFaswWoHKlwnoNHDcliHCkw9Fc8sleXIhvXFEZ6yQ+4uEgVOBqy6j9qq\n"+
-"2FRMkfm1DihAWc3IR0tv4xp/F0ayJD/0ZmaubRtmEjIDw8ozpUvlZhtC6YjEH4CU\n"+
-"LgfbEKN+QlZ79k7Ef+hzB47/Nz8CAwEAAaNQME4wHQYDVR0OBBYEFFhcsSyjG7Ga\n"+
-"lAwW/EZbxeSBLOSjMB8GA1UdIwQYMBaAFFhcsSyjG7GalAwW/EZbxeSBLOSjMAwG\n"+
-"A1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAF5tAbPfql37xYE1Py+vi/Kr\n"+
-"sTNIQ/VaDaMJj0LO9y9w2H/fueAJO3rO6iVSSpr3sDLzg8Qa7yVXsF5ymv4Lx3sJ\n"+
-"vDdgSBUEtInDkVaz7i6bD+VccGzVh/mMNlkaPNFSqiDFVBFr4HedPgLZ1rmksats\n"+
-"E2Ie6YcXVo69CKlzfEJ5ATAGjDBxxfn9BGqPIOc2sO9gcwDIEPXAQkoeX7iKN0oS\n"+
-"IaGtt9+jXAgAz/1AGAbC2R97b/ocXsY1Nb0zdw6PLUvlw6+xvHyM2uocTRv4oG34\n"+\n"+
-"XCPcuZBZCxsla3/66kZnSXA57Dy2K85g9hxKnQZRraI+V7+sBhHe79lAC7Tm0HA=
-"-----END CERTIFICATE-----\n":
-
