@@ -9,8 +9,7 @@
 // Load the library modules, and define the response codes:
 // see http://en.wikipedia.org/wiki/List_of_HTTP_status_codes.
 // Define the list of banned urls, and the table of file types, and run tests.
-// Then start the server on the given port: use the default 80, or use 8080 to
-// avoid privilege or port number clash problems or to add firewall protection.
+// Then start the server on the given port: (using 8080 to avoid privilege or port number clash problems)
 var https = require('https');
 var fs = require('fs-extra');
 var formidable = require('formidable');
@@ -19,9 +18,10 @@ var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var banned = defineBanned();
 var types = defineTypes();
 var sql = require("sqlite3");
+var db = new sql.Database("article.db");
 
 /* --- Self signed key and certificate; generated from http://www.selfsignedcertificate.com/; for testing purposes only; for a real certificate if website were made live https://letsencrypt.org/ could be used --- */
-var db = new sql.Database("article.db");var key =
+var key =
   "-----BEGIN RSA PRIVATE KEY-----\n"+
   "MIIEogIBAAKCAQEArWideleJSjdSBDfmWj/I7keYiBY2zlD7chguEm4X0YhRtdCB\n"+
   "VeGiEDdthxbtM6uabw22uk/lGvkfxuPGZaDNEDOuY8mMK1qxg3+D5uyf8ZROWG/D\n"+
@@ -73,7 +73,7 @@ var cert =
 
 sql.verbose();
 test();
-start(8081);
+start(8080);
 
 // Start the http service.  Accept only requests from localhost, for security.
 // Print out the server address to visit.
