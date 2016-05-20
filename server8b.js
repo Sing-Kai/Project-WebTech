@@ -115,6 +115,11 @@ var actioncode = makeActioncode(url);
       url='/resources/success.html';
       serve(request, response, url);   
       break;
+    case 'newuser':
+      newUser(request);
+      url='/resources/newUserSuccess.html';
+      serve(request, response, url);   
+      break;
     case 'article':
       url='/templates/individual_article.html';
       serveIndividual(request, response, url, actioncode.argument);
@@ -124,14 +129,35 @@ var actioncode = makeActioncode(url);
       servearticles(request, response, url);
       break;
     default:
+      console.log('oops');
       return fail(response, NotFound, "URL refers to an undefined action");
       break;
   }
 }
 
+function newUser(request){
+  console.log('you clicked create new account updated');
+  var newAccount = new formidable.IncomingForm();
+
+  newAccount.parse(request, newUserDB);
+}
+
+function newUserDB(err, params, files) {
+
+  db.serialize(populateNewUser(params.username, params.email, params.password));
+}
+
+function populateNewUser(username, email, password) {
+
+  var prepstatement = db.prepare("insert into login(email, password, username) values (?, ?, ?)", err);
+  prepstatement.run(email, password, username);
+  prepstatement.finalize();  
+}
+
+
 function login(request, response){
   const session = crypto.randomBytes(256);
-  console.log(`${session.length} bytes of random data: ${session.toString('hex')}`);
+  //console.log(`${session.length} bytes of random data: ${session.toString('hex')}`);
 }
   
 
