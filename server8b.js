@@ -95,49 +95,59 @@ function handle(request, response) {
   if (object(url)){
     url="/resources"+url;//Directs to the resources folder
     serve(request, response, url);
-  } else {
+  } else if(action(url)){
     url = resolveAction(request, response, url);
+  } else {
+    console.log(url);    
+    return fail(response, NotFound, "URL type not recognised");
   }
 }
 
 /* New section in server 5 by Ben -----------------------------------------------------*/
 //Resolving actions, checking to see if the url dictates an action as opposed to a file ~Ben
 function resolveAction(request, response, url) {
-  var dash = url.lastIndexOf("-");
-  if (url.lastIndexOf("-") >= 1){      
-    argument = url.substring(dash+1);
-    actioncode= url.substring(0,dash);
-    console.log("argument ",argument);
-    console.log("actioncode ",actioncode);
-  } else {
-    actioncode= url;
-  }
-  switch(actioncode){
-    case '/create':
+var actioncode = makeActioncode(url);
+  switch(actioncode.action){
+    case 'create':
     //basic test of function to be removed when we are happy with performance
       console.log('Could call any function we wanted here');           
       url='/resources/images/mind.jpg';
       serve(request, response, url); 
       break;
-    case '/submission':
+    case 'submission':
       console.log('form submitted:');
       readForm(request); 
       url='/resources/success.html';
       serve(request, response, url);   
       break;
-    case '/article':
+    case 'article':
       url='/templates/individual_article.html';
-      serveIndividual(request, response, url, argument);
+      serveIndividual(request, response, url, actioncode.argument);
       break;
-    case '/articles':
+    case 'articles':
       url='/templates/articles.html';
       servearticles(request, response, url);
       break;
     default:
       return fail(response, NotFound, "URL refers to an undefined action");
       break;
-
   }
+}
+
+
+//Checks if the URL is valid for an actioncode and if it is creates the actioncode and arguments
+function makeActioncode(url){
+  var actioncode={action:undefined, argument:undefined}
+  var dash = url.lastIndexOf("-");
+  
+  if (url.lastIndexOf("-") >= 1){      
+    actioncode.argument = url.substring(dash+1);
+    actioncode.action = url.substring(1,dash);
+
+  } else {
+    actioncode.action = url.substring(1);
+  }
+  return actioncode;
 }
 
 function serve(request, response, url) { 
@@ -233,22 +243,6 @@ function readForm(request){
 }
 
 function storeToDB(err, params, files) {
-  //var image = files.image;
-  //console.log("image[0]: ",image[0]);
-  //console.log("image[File]: ",image[File]);
-  //console.log("image.File: ",image.File);  
-  //console.log("image.domain: ",image.domain);
-  //console.log("image.name: ",image.name);
-  //console.log("files.image.name: ",files.image.name);
-  //console.log("image: ",image);
-/*at the moment we are just writing all the fields from the form to the console*/
-  console.log("Headline: ", params.headline); //params.headline is the headline to put in the database
-  console.log("Description: ", params.description); //params.description is the article description to put in the database
-  console.log("Article: ", params.article);//params.article this is the article content - we might want this to be a document rater than stored in the databas directly.
-  console.log("Image: ", files.image.name);//params.image is the name of the image to put in the database
-  console.log("Image Description: ", params.imgdescription);//params.imgdescription is the description of the image to put in the database
-  console.log("Owner: ", params.owner);//params.owner this is the field is the checkbox the person submitting has to click to say it's all their own work probably not needed in the database
-
 /*gets the time in miliseconds since since 01/1970 to use as a unique ID*/
   var date = new Date();
   var datetime = date.getTime();
@@ -357,6 +351,12 @@ function open(url) {
 function object(url) {
   if (url.lastIndexOf(".") > url.lastIndexOf("/")) return true;
   return false;
+}
+
+//Check if url fits the valid pattern for an action.
+// e.g. asdfsdafg or afdghd.h123vg43
+function action(url) {
+ return /^\/[a-z]+(-[a-z 0-9]+)?$/.test(url);
 }
 
 // Find the content type to respond with, or undefined.
@@ -481,6 +481,12 @@ function test() {
     check(valid("/x/./y"), false, "urls must not contain /./");
     check(valid("/.txt"), false, "urls must not contain /.");
     check(object("/x"), false, "file names must have extensions"); 
+    check(action("/articles"),true); 
+    check(action("articles"),false,"actions must start with /"); 
+    check(action("/2314"),false,"actions may only include lower case letters"); 
+    check(action("/article-1463585950520"),true); 
+    check(action("/article-123b-123b"),false, "actions may only have one argument"); 
+    check(action("/article-Article"),false, "action arguments must be lower case");   
     check(safe("/index.html"), true);
     check(safe("/\n/"), false);
     check(safe("/x y/"), false);
