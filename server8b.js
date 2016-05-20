@@ -1,6 +1,5 @@
 /*
-Run a node.js web server for local development of an interactive web site.Put this program in a site folder and start with "node server.js",
-Then visit the site at the address printed on the console.The server is configured to encourage portable web sites. In particular, URLs are lower cased so the server is case insensitive even on Linux, and paths containing upper case letters are banned so that the file system is treated as case sensitive, even on Windows.
+Run a node.js web server for local development of an interactive web site.Put this program in a site folder and start with "node server.js", then visit the site at the address printed on the console.
 
 When run the following actions are carried out:
 - Load the library modules, and define the response codes (see http://en.wikipedia.org/wiki/List_of_HTTP_status_codes )
@@ -8,13 +7,14 @@ When run the following actions are carried out:
 - Open the database, and define the key and certificate for the https (note these are not secure, having been shared publicly on github, and are for testing only)
 - Run tests, then start the server on the given port: (using 8080 to avoid privilege or port number clash problems)
  */
+
 var https = require('https');
-var fs = require('fs-extra');
-var formidable = require('formidable');
-var Qs = require("querystring");
-var sql = require("sqlite3");
+var fs = require('fs-extra');//copying of files is easier than with vanilla fs
+var sql = require("sqlite3");//to run database
+var formidable = require('formidable');//enables reading of multi-part forms
+var crypto = require('crypto');//for generation of crypto-random numbers
+
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
-var banned = defineBanned();
 var types = defineTypes();
 var db = new sql.Database("article.db");
 
@@ -91,7 +91,6 @@ function handle(request, response) {
   url = addIndex(url);
   if (! valid(url)) return fail(response, NotFound, "Invalid URL");
   if (! safe(url)) return fail(response, NotFound, "Unsafe URL");
-  if (! open(url)) return fail(response, NotFound, "URL has been banned");
   if (object(url)){
     url="/resources"+url;//Directs to the resources folder
     serve(request, response, url);
@@ -103,16 +102,12 @@ function handle(request, response) {
   }
 }
 
-/* New section in server 5 by Ben -----------------------------------------------------*/
-//Resolving actions, checking to see if the url dictates an action as opposed to a file ~Ben
+//Resolving actions
 function resolveAction(request, response, url) {
 var actioncode = makeActioncode(url);
   switch(actioncode.action){
-    case 'create':
-    //basic test of function to be removed when we are happy with performance
-      console.log('Could call any function we wanted here');           
-      url='/resources/images/mind.jpg';
-      serve(request, response, url); 
+    case 'login':
+      login(request, response);
       break;
     case 'submission':
       console.log('form submitted:');
@@ -134,6 +129,11 @@ var actioncode = makeActioncode(url);
   }
 }
 
+function login(request, response){
+  const session = crypto.randomBytes(256);
+  console.log(`${session.length} bytes of random data: ${session.toString('hex')}`);
+}
+  
 
 //Checks if the URL is valid for an actioncode and if it is creates the actioncode and arguments
 function makeActioncode(url){
@@ -180,7 +180,6 @@ function getIndividualTemp(response, type, article, url, err, articleBody){
 function fillIndividualTemp(response, type, article, articleBody, err, template){
   if (err) return fail(response, NotFound, "Article template not found");
   var dbrequest="select * FROM articledetails WHERE datatime='"+article+"'";
-  console.log(dbrequest);
   template=template.replace("temp.body",articleBody);
   db.all(dbrequest, showIndividual.bind(null, response, type, template));
 }
@@ -281,14 +280,9 @@ function populate(key, headline, description, imagename, imagedesc) {
   ps.finalize();  
 }
 
-
-/*-------------------------------------------------*/
-
 // error message if sql statement is incorrect
 //I'm not very acustomed to error handling -but this seems to be unhandled - looks like it causes whole server to crash if there is an error in reading the database!
 function err(e) { if (e) throw e; }
-
-/*-------------------------------------------------------------------------------------*/
 
 // Remove the query part of a url.
 function removeQuery(url) {
@@ -337,7 +331,7 @@ function safe(url) {
 }
 
 // Protect any resources which shouldn't be delivered to the browser.
-function open(url) {
+/*function open(url) {
     for (var i=0; i<banned.length; i++) {
         var ban = banned[i];
         if (url == ban || ends(ban, "/") && starts(url, ban)) {
@@ -345,7 +339,7 @@ function open(url) {
         }
     }
     return true;
-}
+}*/
 
 //Check if url refers to an object or to an action.
 function object(url) {
@@ -387,8 +381,6 @@ function reply(response, url, type) {
 function deliver(response, type, err, content) {
     if (err) return fail(response, NotFound, "File not found");
     var typeHeader = { 'Content-Type': type };
-   // content=content.replace("<!--temp.1-->"," Duh..");
-    //console.log(content);
     response.writeHead(OK, typeHeader);
     response.write(content);
     response.end();
@@ -406,35 +398,6 @@ function fail(response, code, text) {
 // starts function uses a well-known efficiency trick.)
 function starts(s, x) { return s.lastIndexOf(x, 0) == 0; }
 function ends(s, x) { return s.indexOf(x, s.length-x.length) >= 0; }
-
-// Avoid delivering the server source file.  Also call banUpperCase.
-function defineBanned() {
-    var banned = ["/server.js"];
-    banUpperCase(".", banned);
-    return banned;
-}
-
-// Check a folder for files/subfolders with non-lowercase names.  Add them to
-// the banned list so they don't get delivered, making the site case sensitive,
-// so that it can be moved from Windows to Linux, for example. Synchronous I/O
-// is used because this function is only called during startup.  This avoids
-// expensive file system operations during normal execution.  A file with a
-// non-lowercase name added while the server is running will get delivered, but
-// it will be detected and banned when the server is next restarted.
-function banUpperCase(folder, banned) {
-    var folderBit = 1 << 14;
-    var names = fs.readdirSync(folder);
-    for (var i=0; i<names.length; i++) {
-        var name = names[i];
-        var file = folder + "/" + name;
-        if (name != name.toLowerCase()) {
-            banned.push(file.substring(1));
-        }
-        var mode = fs.statSync(file).mode;
-        if ((mode & folderBit) == 0) continue;
-        banUpperCase(file, banned);
-    }
-}
 
 // The most common standard file extensions are supported.
 // Some common non-standard file extensions are explicitly excluded.
@@ -490,8 +453,6 @@ function test() {
     check(safe("/index.html"), true);
     check(safe("/\n/"), false);
     check(safe("/x y/"), false);
-    check(open("/index.html"), true);
-    check(open("/server.js"), false);
     check(findType("/x.txt"), "text/plain");
     check(findType("/x"), undefined);
     check(findType("/x.abc"), undefined);
