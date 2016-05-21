@@ -16,7 +16,7 @@ var crypto = require('crypto');//for generation of crypto-random numbers
 
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types = defineTypes();
-var db = new sql.Database("article.db");
+var db = new sql.Database("scienceCollective.db");
 
 /* --- Self signed key and certificate; generated from http://www.selfsignedcertificate.com/; for testing purposes only; for a real certificate if website were made live https://letsencrypt.org/ could be used --- */
 var key =
