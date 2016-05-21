@@ -140,24 +140,7 @@ var actioncode = makeActioncode(url);
   }
 }
 
-function newUser(request){
-  console.log('you clicked create new account updated');
-  var newAccount = new formidable.IncomingForm();
 
-  newAccount.parse(request, newUserDB);
-}
-
-function newUserDB(err, params, files) {
-
-  db.serialize(populateNewUser(params.username, params.email, params.password));
-}
-
-function populateNewUser(username, email, password) {
-
-  var prepstatement = db.prepare("insert into login(email, password, username) values (?, ?, ?)", err);
-  prepstatement.run(email, password, username);
-  prepstatement.finalize();  
-}
 
 //generates a session ID and saves it as a cookie.
 function login(request, response){
@@ -317,6 +300,25 @@ function populate(key, headline, description, imagename, imagedesc) {
   ps.run(key, headline, description, imagename, imagedesc, 'Default User');
   ps.finalize();  
 }
+
+
+
+function newUser(request){
+  var newAccount = new formidable.IncomingForm();
+  newAccount.parse(request, newUserDB);
+}
+
+function newUserDB(err, params, files) {
+  db.serialize(populateNewUser(params.username, params.email, params.password));
+}
+
+//populates new user data into login table
+function populateNewUser(username, email, password) {
+  var prepstatement = db.prepare("insert into login(email, password, username) values (?, ?, ?)", err);
+  prepstatement.run(email, password, username);
+  prepstatement.finalize();  
+}
+
 
 // error message if sql statement is incorrect
 //I'm not very acustomed to error handling -but this seems to be unhandled - looks like it causes whole server to crash if there is an error in reading the database!
