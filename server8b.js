@@ -117,7 +117,7 @@ var actioncode = makeActioncode(url);
       break;
     case 'newuser':
       newUser(request);
-      url='/resources/newUserSuccess.html';
+      url='/resources/new_user_success.html';
       serve(request, response, url);   
       break;
     case 'article':
@@ -128,8 +128,13 @@ var actioncode = makeActioncode(url);
       url='/templates/articles.html';
       servearticles(request, response, url);
       break;
+    case 'request':
+      console.log(request);
+      return fail(response, NotFound, "URL refers to an undefined action");
+      break;
     default:
       console.log('oops');
+      console.log(request);
       return fail(response, NotFound, "URL refers to an undefined action");
       break;
   }
@@ -154,10 +159,17 @@ function populateNewUser(username, email, password) {
   prepstatement.finalize();  
 }
 
-
+//generates a session ID and saves it as a cookie.
 function login(request, response){
-  const session = crypto.randomBytes(256);
-  //console.log(`${session.length} bytes of random data: ${session.toString('hex')}`);
+  const session = crypto.randomBytes(100).toString('hex');//generates a random string to use as a session ID. Converting to hex is a cheat to make it header safe. Very innefficient way of doing things(twice as many bites, same entropy). Better aproaches exist but require more code or installing aditional modules.
+  
+/* To do: parse form and look up in DB to see if password and email match*/
+/* To do: create an expiry date for the cookie so that login is not for ever*/
+/* To do: save the session ID to a database table including session ID and User ID*/
+/* To do: actually compare cookie with saved sessions before allowing users to submit articles! */
+  response.setHeader('Set-Cookie', 'session='+session);
+  var url="/resources/login_success.html"
+  serve(request, response, url);
 }
   
 
